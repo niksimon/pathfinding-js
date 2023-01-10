@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="main.js" defer></script>
+    <style>
+        body {
+            padding: 0;
+            margin: 0 auto;
+            background-color: #222;
+            display: flex;
+            justify-content: center;
+            flex-direction: column;
+            width: 800px;
+            height: 100vh;
+            font-family: sans-serif;
+        }
+        canvas {
+            background-color: #fff;
+            width: 800px;
+            height: 800px;
+        }
+        h1 {
+            color: #fff;
+            margin-bottom: 10px;
+        }
+        .controls {
+            padding-top: 15px;
+        }
+        .controls button {
+            background-color: #fff;
+            color: #000;
+            font-family: inherit;
+            padding: 10px 20px;
+            border: 2px solid #eee;
+            border-radius: 5px;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>PathFinding</h1>
+    <canvas id="canvas"></canvas>
+    <div class="controls">
+        <button id="start">Start search</button>
+        
+    </div>
+</body>
+</html>
