@@ -10,46 +10,46 @@ const mapHeight = tileCount;
 const start = {x: 0, y: 0}
 const end = {x: tileCount - 1, y: tileCount - 1};
 
-const map = new Map();
-map.set("0,2", "Wall");
-map.set("1,2", "Wall");
-map.set("2,2", "Wall");
-map.set("10,10", "Wall");
-map.set("10,11", "Wall");
-map.set("10,12", "Wall");
-map.set("10,13", "Wall");
-map.set("10,14", "Wall");
-map.set("10,15", "Wall");
-map.set("11,10", "Wall");
-map.set("12,10", "Wall");
-map.set("13,10", "Wall");
-map.set("3,7", "Wall");
-map.set("4,7", "Wall");
-map.set("5,7", "Wall");
-map.set("6,7", "Wall");
-map.set("7,7", "Wall");
-map.set("7,8", "Wall");
-map.set("7,9", "Wall");
-map.set("7,10", "Wall");
-map.set("0,13", "Wall");
-map.set("1,13", "Wall");
-map.set("2,13", "Wall");
-map.set("3,13", "Wall");
-map.set("10,1", "Wall");
-map.set("9,1", "Wall");
-map.set("8,0", "Wall");
-map.set("8,1", "Wall");
-map.set("8,2", "Wall");
-map.set("8,3", "Wall");
-map.set("8,4", "Wall");
-map.set("7,4", "Wall");
-map.set("6,4", "Wall");
-map.set("5,4", "Wall");
-map.set("5,5", "Wall");
-map.set("5,6", "Wall");
-map.set("13,6", "Wall");
-map.set("14,6", "Wall");
-map.set("15,6", "Wall");
+const walls = new Set();
+walls.add("0,2");
+walls.add("1,2");
+walls.add("2,2");
+walls.add("10,10");
+walls.add("10,11");
+walls.add("10,12");
+walls.add("10,13");
+walls.add("10,14");
+walls.add("10,15");
+walls.add("11,10");
+walls.add("12,10");
+walls.add("13,10");
+walls.add("3,7");
+walls.add("4,7");
+walls.add("5,7");
+walls.add("6,7");
+walls.add("7,7");
+walls.add("7,8");
+walls.add("7,9");
+walls.add("7,10");
+walls.add("0,13");
+walls.add("1,13");
+walls.add("2,13");
+walls.add("3,13");
+walls.add("10,1");
+walls.add("9,1");
+walls.add("8,0");
+walls.add("8,1");
+walls.add("8,2");
+walls.add("8,3");
+walls.add("8,4");
+walls.add("7,4");
+walls.add("6,4");
+walls.add("5,4");
+walls.add("5,5");
+walls.add("5,6");
+walls.add("13,6");
+walls.add("14,6");
+walls.add("15,6");
 
 ctx.strokeStyle = "#333";
 for(let i = 0; i < tileCount; i++) {
@@ -58,17 +58,28 @@ for(let i = 0; i < tileCount; i++) {
     }
 }
 
-drawMap(map, start);
-let bfsInterval = null;
+drawMap(walls, start, end);
+let searchInterval = null;
 
 document.getElementById("start").addEventListener("click", () => {
-    drawMap(map, start);
-    clearInterval(bfsInterval);
-    bfsInterval = null;
-    bfs(start);
+    const searchOption = document.getElementById("search").value;
+    drawMap(walls, start, end);
+    clearInterval(searchInterval);
+    searchInterval = null;
+    switch(searchOption) {
+        case "bfs":
+            bfs(start, end);
+            break;
+        case "a*":
+            aStar(start, end);
+            break;
+        default:
+            break;
+    }
+
 });
 
-function bfs(start) {
+function bfs(start, end) {
     const visited = new Set();
     const startPos = {
         x: start.x,
@@ -76,49 +87,115 @@ function bfs(start) {
         path: new Set()
     }
     startPos.path.add(`${start.x},${start.y}`);
-    const q = [startPos];
-    const directions = [[0, -1], [0, 1], [-1, 0], [1, 0]];
+    const queue = [startPos];
+    const directions = [[1, 0], [0, 1], [-1, 0], [0, -1]];
 
-    bfsInterval = setInterval(() => {
-        if(q.length === 0) {
-            clearInterval(bfsInterval);
+    searchInterval = setInterval(() => {
+        if(queue.length === 0) {
+            clearInterval(searchInterval);
+            return;
         }
 
-        const currentPos = q.shift();
+        const currentPos = queue.shift();
 
-        drawMap(map, currentPos, currentPos.path, visited);
+        drawMap(walls, currentPos, end, currentPos.path, visited);
 
         for(const d of directions) {
-            const path_ = new Set(currentPos.path);
+            const path = new Set(currentPos.path);
             let x = currentPos.x;
             let y = currentPos.y;
 
-            x += d[1];
-            y += d[0];
+            x += d[0];
+            y += d[1];
 
-            path_.add(`${x},${y}`);
+            path.add(`${x},${y}`);
 
-            if(x >= 0 && x < mapWidth && y >= 0 && y < mapHeight && map.get(`${x},${y}`) !== "Wall") {
+            if(x >= 0 && x < mapWidth && y >= 0 && y < mapHeight && !walls.has(`${x},${y}`)) {
                 if(x === end.x && y === end.y) {
-                    drawMap(map, {x: x, y: y}, path_, visited);
-                    clearInterval(bfsInterval);
+                    drawMap(walls, {x: x, y: y}, end, path, visited);
+                    clearInterval(searchInterval);
+                    return;
                 }
-                else if(!map.has(`${x},${y}`) && !visited.has(`${x},${y}`)) {
-                    q.push({
+                else if(!walls.has(`${x},${y}`) && !visited.has(`${x},${y}`)) {
+                    queue.push({
                         x: x,
                         y: y,
-                        path: new Set(path_)
+                        path: new Set(path)
                     });
                     visited.add(`${x},${y}`);
                 }
             }
         }
     }, 50);
-
-    return false;
 }
 
-function drawMap(map, player, path = new Set(), visited = new Set()) {
+function aStar(start, end) {
+    const visited = new Set();
+    const distFromStart = {};
+    const distToEnd = {};
+    distFromStart[`${start.x},${start.y}`] = 0;
+
+    const startPos = {
+        x: start.x,
+        y: start.y,
+        path: new Set(),
+        priority: 0,
+    }
+
+    startPos.path.add(`${start.x},${start.y}`);
+    const queue = [startPos];
+    const directions = [[1, 0], [0, 1], [-1, 0], [0, -1]];
+
+    searchInterval = setInterval(() => {
+        if(queue.length === 0) {
+            clearInterval(searchInterval);
+            return;
+        }
+
+        const currentPos = queue.shift();
+
+        drawMap(walls, currentPos, end, currentPos.path, visited);
+
+        for(const d of directions) {
+            const path = new Set(currentPos.path);
+            let x = currentPos.x;
+            let y = currentPos.y;
+
+            x += d[0];
+            y += d[1];
+
+            path.add(`${x},${y}`);
+
+            if(x >= 0 && x < mapWidth && y >= 0 && y < mapHeight && !walls.has(`${x},${y}`)) {
+                if(x === end.x && y === end.y) {
+                    drawMap(walls, {x: x, y: y}, end, path, visited);
+                    clearInterval(searchInterval);
+                    return;
+                }
+                else if(!walls.has(`${x},${y}`) && !visited.has(`${x},${y}`)) {
+                    distFromStart[`${x},${y}`] = distFromStart[`${currentPos.x},${currentPos.y}`] + 1;
+                    distToEnd[`${x},${y}`] = distance({x: x, y: y}, {x: end.x, y: end.y});
+                    const priority = distFromStart[`${x},${y}`] + distToEnd[`${x},${y}`];
+                    queue.push({
+                        x: x,
+                        y: y,
+                        path: new Set(path),
+                        priority: priority
+                    });
+                    visited.add(`${x},${y}`);
+                }
+            }
+        }
+
+        queue.sort((a, b) => a.priority - b.priority);
+    }, 50);
+}
+
+function distance(pos1, pos2) {
+    return Math.abs(pos1.x - pos2.x) + Math.abs(pos1.y - pos2.y);
+}
+
+function drawMap(walls, pos, end, path = new Set(), visited = new Set()) {
     for(let i = 0; i < tileCount; i++) {
         for(let j = 0; j < tileCount; j++) {
             const offsetX = j === 0 ? 0 : 1;
@@ -131,7 +208,7 @@ function drawMap(map, player, path = new Set(), visited = new Set()) {
             else if(visited.has(`${j},${i}`)) {
                 ctx.fillStyle = "lightgreen";
             }
-            else if(map.has(`${j},${i}`)) {
+            else if(walls.has(`${j},${i}`)) {
                 ctx.fillStyle = "#333";
             }
             else {
@@ -142,11 +219,12 @@ function drawMap(map, player, path = new Set(), visited = new Set()) {
     }
 
     ctx.fillStyle = "red";
-    const endOffset = {x: end.x === 0 ? 0 : 1, y: end.y === 0 ? 0 : 1};
-    ctx.fillRect(end.x * tileSize + endOffset.x, end.y * tileSize + endOffset.y, tileSize, tileSize);
+    const endOffset = {x: end.x === 0 ? 0 : 1, y: end.y === 0 ? 0 : 1,
+        width: end.x === 0 || end.x === tileCount - 1 ? 1 : 2, height: end.y === 0 || end.y === tileCount - 1 ? 1 : 2};
+    ctx.fillRect(end.x * tileSize + endOffset.x, end.y * tileSize + endOffset.y, tileSize - endOffset.width, tileSize - endOffset.height);
 
     ctx.fillStyle = "blue";
-    const playerOffset = {x: player.x === 0 ? 0 : 1, y: player.y === 0 ? 0 : 1,
-        width: player.x === 0 || player.x === tileCount - 1 ? 1 : 2, height: player.y === 0 || player.y === tileCount - 1 ? 1 : 2};
-    ctx.fillRect(player.x * tileSize + playerOffset.x, player.y * tileSize + playerOffset.y, tileSize - playerOffset.width, tileSize - playerOffset.height);
+    const posOffset = {x: pos.x === 0 ? 0 : 1, y: pos.y === 0 ? 0 : 1,
+        width: pos.x === 0 || pos.x === tileCount - 1 ? 1 : 2, height: pos.y === 0 || pos.y === tileCount - 1 ? 1 : 2};
+    ctx.fillRect(pos.x * tileSize + posOffset.x, pos.y * tileSize + posOffset.y, tileSize - posOffset.width, tileSize - posOffset.height);
 }

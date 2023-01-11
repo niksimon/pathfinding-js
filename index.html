@@ -10,12 +10,13 @@
         body {
             padding: 0;
             margin: 0 auto;
-            background-color: #222;
+            background-color: #eee;
             display: flex;
             justify-content: center;
             flex-direction: column;
             width: 800px;
             height: 100vh;
+            min-height: 940px;
             font-family: sans-serif;
         }
         canvas {
@@ -24,7 +25,8 @@
             height: 800px;
         }
         h1 {
-            color: #fff;
+            color: #222;
+            margin-top: 0;
             margin-bottom: 10px;
         }
         .controls {
@@ -35,11 +37,23 @@
             color: #000;
             font-family: inherit;
             padding: 10px 20px;
-            border: 2px solid #eee;
+            border: 1px solid #333;
             border-radius: 5px;
             font-size: 1.2em;
-            font-weight: bold;
             cursor: pointer;
+            transition: all 200ms;
+            font-weight: bold;
+        }
+        .controls button:hover {
+            background-color: #eee;
+        }
+        .controls select {
+            font-size: 1.2em;
+            font-family: inherit;
+            padding: 10px 20px;
+            background-color: #fff;
+            border: 1px solid #333;
+            border-radius: 5px;
         }
     </style>
 </head>
@@ -48,7 +62,10 @@
     <canvas id="canvas"></canvas>
     <div class="controls">
         <button id="start">Start search</button>
-        
+        <select id="search">
+            <option value="a*">A* search</option>
+            <option value="bfs">Breadth-first search</option>
+        </select>
     </div>
 </body>
 </html>
