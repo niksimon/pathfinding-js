@@ -20,6 +20,9 @@ let searching = false;
 
 document.getElementById("start").addEventListener("click", () => {
     const searchOption = document.getElementById("search").value;
+    const allowDiag = document.getElementById("allow-diag").checked;
+    const directions = !allowDiag ? [[1, 0], [0, 1], [-1, 0], [0, -1]] :
+    [[1, 0], [0, 1], [-1, 0], [0, -1], [-1, -1], [1, -1], [-1, 1], [1, 1]];
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawMap(walls, start, end);
     clearInterval(searchInterval);
@@ -27,10 +30,10 @@ document.getElementById("start").addEventListener("click", () => {
     searching = false;
     switch(searchOption) {
         case "bfs":
-            bfs(start, end);
+            bfs(start, end, directions);
             break;
         case "a*":
-            aStar(start, end);
+            aStar(start, end, directions);
             break;
         default:
             break;
@@ -38,7 +41,7 @@ document.getElementById("start").addEventListener("click", () => {
 
 });
 
-function bfs(start, end) {
+function bfs(start, end, directions) {
     searching = true;
     const visited = new Set();
     const startPos = {
@@ -48,7 +51,7 @@ function bfs(start, end) {
     }
     startPos.path.add(`${start.x},${start.y}`);
     const queue = [startPos];
-    const directions = [[1, 0], [0, 1], [-1, 0], [0, -1]];
+    //const directions = [[1, 0], [0, 1], [-1, 0], [0, -1]];
 
     searchInterval = setInterval(() => {
         if(queue.length === 0) {
@@ -91,7 +94,7 @@ function bfs(start, end) {
     }, 25);
 }
 
-function aStar(start, end) {
+function aStar(start, end, directions) {
     searching = true;
     const visited = new Set();
     visited.add(`${start.x},${start.y}`);
@@ -108,7 +111,7 @@ function aStar(start, end) {
 
     startPos.path.add(`${start.x},${start.y}`);
     const queue = [startPos];
-    const directions = [[1, 0], [0, 1], [-1, 0], [0, -1]];
+    //const directions = [[1, 0], [0, 1], [-1, 0], [0, -1]];
 
     searchInterval = setInterval(() => {
         if(queue.length === 0) {
