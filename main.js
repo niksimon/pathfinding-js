@@ -41,6 +41,22 @@ document.getElementById("start").addEventListener("click", () => {
 
 });
 
+document.getElementById("reset").addEventListener("click", () => {
+    clearInterval(searchInterval);
+    searchInterval = null;
+    searching = false;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawMap(walls, start, end);
+});
+
+document.getElementById("clear").addEventListener("click", () => {
+    if(!searching) {
+        walls.clear();
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        drawMap(walls, start, end);
+    }
+});
+
 function bfs(start, end, directions) {
     searching = true;
     const visited = new Set();

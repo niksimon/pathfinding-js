@@ -37,10 +37,10 @@
             background-color: #fff;
             color: #000;
             font-family: inherit;
-            padding: 10px 25px;
+            padding: 8px 25px;
             border: 1px solid #333;
             border-radius: 5px;
-            font-size: 1.2em;
+            font-size: 1.1em;
             cursor: pointer;
             transition: all 200ms;
             font-weight: bold;
@@ -49,9 +49,9 @@
             background-color: #eee;
         }
         .controls select {
-            font-size: 1.2em;
+            font-size: 1.1em;
             font-family: inherit;
-            padding: 10px 20px;
+            padding: 8px 5px;
             background-color: #fff;
             border: 1px solid #333;
             border-radius: 5px;
@@ -62,7 +62,9 @@
     <h1>PathFinding</h1>
     <canvas id="canvas"></canvas>
     <div class="controls">
-        <button id="start">Start search</button>
+        <button id="start">Start</button>
+        <button id="reset">Reset</button>
+        <button id="clear">Clear walls</button>
         <select id="search">
             <option value="a*">A* search</option>
             <option value="bfs">Breadth-first search</option>
