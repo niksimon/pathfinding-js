@@ -122,7 +122,7 @@ function aStar(start, end, directions) {
         x: start.x,
         y: start.y,
         path: new Set(),
-        priority: 0,
+        f: 0
     }
 
     startPos.path.add(`${start.x},${start.y}`);
@@ -160,19 +160,19 @@ function aStar(start, end, directions) {
                 else if(!visited.has(`${x},${y}`)) {
                     distFromStart[`${x},${y}`] = distFromStart[`${currentPos.x},${currentPos.y}`] + 1;
                     distToEnd[`${x},${y}`] = distance({x: x, y: y}, {x: end.x, y: end.y});
-                    const priority = distFromStart[`${x},${y}`] + distToEnd[`${x},${y}`];
+                    const f = distFromStart[`${x},${y}`] + distToEnd[`${x},${y}`];
                     queue.push({
                         x: x,
                         y: y,
                         path: new Set(path),
-                        priority: priority
+                        f: f
                     });
                     visited.add(`${x},${y}`);
                 }
             }
         }
 
-        queue.sort((a, b) => a.priority - b.priority);
+        queue.sort((a, b) => a.f - b.f);
     }, 25);
 }
 
@@ -184,11 +184,11 @@ function drawMap(walls, pos, end, path = new Set(), visited = new Set()) {
     for(let i = 0; i < tileCount; i++) {
         for(let j = 0; j < tileCount; j++) {
             if(path.has(`${j},${i}`)) {
-                ctx.fillStyle = "lightblue";
+                ctx.fillStyle = "#B9E0FF";
                 ctx.fillRect(j * tileSize, i * tileSize, tileSize, tileSize);
             }
             else if(visited.has(`${j},${i}`)) {
-                ctx.fillStyle = "lightgreen";
+                ctx.fillStyle = "#B3FFAE";
                 ctx.fillRect(j * tileSize, i * tileSize, tileSize, tileSize);
             }
             else if(walls.has(`${j},${i}`)) {
@@ -198,10 +198,10 @@ function drawMap(walls, pos, end, path = new Set(), visited = new Set()) {
         }
     }
 
-    ctx.fillStyle = "red";
+    ctx.fillStyle = "#FF0032";
     ctx.fillRect(end.x * tileSize, end.y * tileSize, tileSize, tileSize);
 
-    ctx.fillStyle = "blue";
+    ctx.fillStyle = "#3C79F5";
     ctx.fillRect(pos.x * tileSize, pos.y * tileSize, tileSize, tileSize);
 
     ctx.strokeStyle = "#444";
